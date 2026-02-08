@@ -1,42 +1,27 @@
 services:
-  postgresql:
-    image: postgres:16
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      POSTGRES_USER: ${POSTGRESQL_USER:-zipline}
-      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD:?POSTGRESQL_PASSWORD is required}
-      POSTGRES_DB: ${POSTGRESQL_DB:-zipline}
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ['CMD', 'pg_isready', '-U', 'zipline']
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  zipline:
-    image: ghcr.io/diced/zipline:latest
+  n8n:
+    image: ghcr.io/n8n-io/n8n:latest
     restart: unless-stopped
     ports:
-      - '3000:3000'
+      - "8080:8080"
     env_file:
       - .env
-    environment:
-      - DATABASE_URL=postgres://${POSTGRESQL_USER:-zipline}:${POSTGRESQL_PASSWORD}@postgresql:5432/${POSTGRESQL_DB:-zipline}
-    depends_on:
-      postgresql:
-        condition: service_healthy
     volumes:
-      - './uploads:/zipline/uploads'
-      - './public:/zipline/public'
-      - './themes:/zipline/themes'
+      - ./data:/home/node/.n8n
+    command: n8n start --tunnel --host 0.0.0.0
     healthcheck:
-      test: ['CMD', 'wget', '-q', '--spider', 'http://0.0.0.0:3000/api/healthcheck']
-      interval: 15s
-      timeout: 2s
-      retries: 2
-
-volumes:
-  pgdata:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    environment:
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=8080
+      - PGHOST='ep-fancy-bonus-aiw1nc2t-pooler.c-4.us-east-1.aws.neon.tech'
+      - PGDATABASE='neondb'
+      - PGUSER='neondb_owner'
+      - PGPASSWORD='npg_0l8qeWpaHwQs'
+      - PGSSLMODE='require'
+      - PGCHANNELBINDING='require'
+      - PGPORT='5432'
+      - DB_TYPE=postgresdb
