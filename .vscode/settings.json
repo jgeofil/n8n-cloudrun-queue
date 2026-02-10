@@ -1,3 +1,6 @@
 {
-    "files.autoSave": "afterDelay"
+    "files.autoSave": "afterDelay",
+    "cloudcode.yaml.schemas": {
+        "cloudrun.googleapis.com/v1/Service": "https://raw.githubusercontent.com/GoogleCloudPlatform/cloud-run-button/master/src/schemas/cloudrun.googleapis.com-v1-Service.yaml"
+    }
 }
