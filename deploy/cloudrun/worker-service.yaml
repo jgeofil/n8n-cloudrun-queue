@@ -1,0 +1,41 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: n8n-worker
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "20"
+    spec:
+      containers:
+        - image: gcr.io/jgeofil/n8n-cloudrun-queue/n8n-worker:latest
+          args: ["worker", "--concurrency=5"]
+          ports:
+            - containerPort: 8080
+          env:
+            - name: N8N_PORT
+              value: "8080"
+            - name: EXECUTIONS_MODE
+              value: queue
+            - name: QUEUE_BULL_REDIS_HOST
+              value: "${REDIS_HOST}"
+            - name: QUEUE_BULL_REDIS_PORT
+              value: "${REDIS_PORT}"
+            - name: QUEUE_BULL_REDIS_PASSWORD
+              value: "${REDIS_PASSWORD}"
+            - name: DB_TYPE
+              value: postgresdb
+            - name: DB_POSTGRESDB_HOST
+              value: "${NEON_DB_HOST}"
+            - name: DB_POSTGRESDB_PORT
+              value: "${NEON_DB_PORT}"
+            - name: DB_POSTGRESDB_DATABASE
+              value: "${NEON_DB_NAME}"
+            - name: DB_POSTGRESDB_USER
+              value: "${NEON_DB_USER}"
+            - name: DB_POSTGRESDB_PASSWORD
+              value: "${NEON_DB_PASSWORD}"
+            - name: DB_POSTGRESDB_SSL_ENABLED
+              value: "true"

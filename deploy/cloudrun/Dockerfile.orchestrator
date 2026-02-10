@@ -1,0 +1,4 @@
+FROM n8nio/n8n:1.62.3
+
+# n8n default user is node
+USER node
