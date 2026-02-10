@@ -1,0 +1,28 @@
+steps:
+  # Build Orchestrator
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "gcr.io/$PROJECT_ID/n8n-orchestrator:latest",
+        "-f",
+        "cloudrun/Dockerfile.orchestrator",
+        ".",
+      ]
+
+  # Build Worker
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "gcr.io/$PROJECT_ID/n8n-worker:latest",
+        "-f",
+        "cloudrun/Dockerfile.worker",
+        ".",
+      ]
+
+images:
+  - "gcr.io/$PROJECT_ID/n8n-orchestrator:latest"
+  - "gcr.io/$PROJECT_ID/n8n-worker:latest"

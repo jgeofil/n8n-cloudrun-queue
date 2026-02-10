@@ -10,7 +10,7 @@ spec:
         autoscaling.knative.dev/maxScale: "3"
     spec:
       containers:
-        - image: gcr.io/jgeofil/n8n-cloudrun-queue/n8n-orchestrator:latest
+        - image: gcr.io/cs-poc-fbob8ipx577g8it2gpy4vsp/n8n-orchestrator:latest
           ports:
             - containerPort: 8080
           env:

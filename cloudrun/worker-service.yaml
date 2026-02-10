@@ -10,7 +10,7 @@ spec:
         autoscaling.knative.dev/maxScale: "20"
     spec:
       containers:
-        - image: gcr.io/jgeofil/n8n-cloudrun-queue/n8n-worker:latest
+        - image: gcr.io/cs-poc-fbob8ipx577g8it2gpy4vsp/n8n-worker:latest
           args: ["worker", "--concurrency=5"]
           ports:
             - containerPort: 8080
