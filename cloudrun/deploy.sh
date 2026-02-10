@@ -6,9 +6,15 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 ENV_FILE="$SCRIPT_DIR/cloudrun.env"
 REGION="us-central1"
+CUSTOM_DOMAIN="n8n.xye.se"
 
-# check if cloudrun.env exists
-if [ ! -f "$ENV_FILE" ]; then
+
+# Export env vars from file
+if [ -f "$ENV_FILE" ]; then
+    set -o allexport
+    source "$ENV_FILE"
+    set +o allexport
+else
     echo "Error: $ENV_FILE not found. Please create it from neon.env as described in the README."
     exit 1
 fi
@@ -35,10 +41,12 @@ gcloud builds submit --config "$SCRIPT_DIR/cloudbuild.yaml" .
 
 # Deploy Orchestrator (Initial)
 echo "Deploying Orchestrator (Initial pass)..."
-gcloud run services replace "$SCRIPT_DIR/main-service.yaml" \
+# Render YAML with env vars
+envsubst < "$SCRIPT_DIR/main-service.yaml" > "$SCRIPT_DIR/main-service.rendered.yaml"
+
+gcloud run services replace "$SCRIPT_DIR/main-service.rendered.yaml" \
   --project "$PROJECT_ID" \
-  --region "$REGION" \
-  --env-vars-file "$ENV_FILE"
+  --region "$REGION"
 
 # Get Service URL
 SERVICE_URL=$(gcloud run services describe n8n-orchestrator \
@@ -78,17 +86,25 @@ echo "Updated $ENV_FILE with URL: $BASE_URL"
 
 # Redeploy Orchestrator with new URLs
 echo "Redeploying Orchestrator with updated configuration..."
-gcloud run services replace "$SCRIPT_DIR/main-service.yaml" \
+# Re-export in case they changed
+set -o allexport
+source "$ENV_FILE"
+set +o allexport
+
+envsubst < "$SCRIPT_DIR/main-service.yaml" > "$SCRIPT_DIR/main-service.rendered.yaml"
+gcloud run services replace "$SCRIPT_DIR/main-service.rendered.yaml" \
   --project "$PROJECT_ID" \
-  --region "$REGION" \
-  --env-vars-file "$ENV_FILE"
+  --region "$REGION"
 
 # Deploy Worker
 echo "Deploying Worker..."
-gcloud run services replace "$SCRIPT_DIR/worker-service.yaml" \
+envsubst < "$SCRIPT_DIR/worker-service.yaml" > "$SCRIPT_DIR/worker-service.rendered.yaml"
+gcloud run services replace "$SCRIPT_DIR/worker-service.rendered.yaml" \
   --project "$PROJECT_ID" \
-  --region "$REGION" \
-  --env-vars-file "$ENV_FILE"
+  --region "$REGION"
+
+# Cleanup
+rm "$SCRIPT_DIR"/*.rendered.yaml
 
 echo "Deployment complete!"
 echo "n8n is running at: $SERVICE_URL"

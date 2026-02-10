@@ -1,0 +1,41 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: n8n-worker
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "20"
+    spec:
+      containers:
+        - image: gcr.io/cs-poc-fbob8ipx577g8it2gpy4vsp/n8n-worker:latest
+          args: ["worker", "--concurrency=5"]
+          ports:
+            - containerPort: 8080
+          env:
+            - name: N8N_PORT
+              value: "8080"
+            - name: EXECUTIONS_MODE
+              value: queue
+            - name: QUEUE_BULL_REDIS_HOST
+              value: "wanted-reptile-19567.upstash.io"
+            - name: QUEUE_BULL_REDIS_PORT
+              value: "6379"
+            - name: QUEUE_BULL_REDIS_PASSWORD
+              value: "AUxvAAIncDI1YjY2ZWEwODIzODE0MjQxOTcyODQ4MWNlMzJmNjAwY3AyMTk1Njc"
+            - name: DB_TYPE
+              value: postgresdb
+            - name: DB_POSTGRESDB_HOST
+              value: "ep-crimson-sunset-ai5iq92c-pooler.c-4.us-east-1.aws.neon.tech"
+            - name: DB_POSTGRESDB_PORT
+              value: "5432"
+            - name: DB_POSTGRESDB_DATABASE
+              value: "neondb"
+            - name: DB_POSTGRESDB_USER
+              value: "neondb_owner"
+            - name: DB_POSTGRESDB_PASSWORD
+              value: "npg_0l8qeWpaHwQs"
+            - name: DB_POSTGRESDB_SSL_ENABLED
+              value: "true"
