@@ -24,6 +24,8 @@ spec:
               value: "6379"
             - name: QUEUE_BULL_REDIS_PASSWORD
               value: "AUxvAAIncDI1YjY2ZWEwODIzODE0MjQxOTcyODQ4MWNlMzJmNjAwY3AyMTk1Njc"
+            - name: QUEUE_BULL_REDIS_USERNAME
+              value: "default"
             - name: DB_TYPE
               value: postgresdb
             - name: DB_POSTGRESDB_HOST
@@ -42,3 +44,5 @@ spec:
               value: "https://n8n.xye.se"
             - name: WEBHOOK_URL
               value: "https://n8n.xye.se"
+            - name: N8N_ENCRYPTION_KEY
+              value: "p/nAixZ0ESrw+Y2KDpu4STsLFvup6Fr+EDx2ZFLZKlMyXEz5+1YICMuf"

@@ -24,6 +24,8 @@ spec:
               value: "${REDIS_PORT}"
             - name: QUEUE_BULL_REDIS_PASSWORD
               value: "${REDIS_PASSWORD}"
+            - name: QUEUE_BULL_REDIS_USERNAME
+              value: "${REDIS_USERNAME}"
             - name: DB_TYPE
               value: postgresdb
             - name: DB_POSTGRESDB_HOST
@@ -42,3 +44,5 @@ spec:
               value: "${N8N_EDITOR_BASE_URL}"
             - name: WEBHOOK_URL
               value: "${WEBHOOK_URL}"
+            - name: N8N_ENCRYPTION_KEY
+              value: "${N8N_ENCRYPTION_KEY}"
